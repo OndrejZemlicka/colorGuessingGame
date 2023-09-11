@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Color guessing game</title>
+</head>
+<body>
+    <div id="stats">
+        <p><span id="streak">streak</span><span id="time">time</span></p>
+    </div>
+
+    <h1>Color guessing game <br> <span id="colorDisplay">RGB</span></h1>
+
+    <div id="control">
+        <button id="reset">Next color</button>
+        <span id="message"></span>
+        <button id="threesquares">3 squares</button>
+        <button id="sixsquares" class="selected">6 squares</button>
+        <button id="easy">Easy</button>
+        <button id="hard">Hard</button>
+    </div>
+    <div class="container">
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+    </div>
+
+
+    <script>
+        var totalGuessTime = 0;
+        var totalGuesses = 0;
+      
+        function randomColor() {
+          var red = Math.floor(Math.random() * 256);
+          var green = Math.floor(Math.random() * 256);
+          var blue = Math.floor(Math.random() * 256);
+          return "rgb(" + red + ", " + green + ", " + blue + ")";
+        }
+      
+        function hardRandomColor(base) {
+          var red = base - Math.floor(Math.random() * 75);
+          if (red < 0) {
+            red = red * (-1);
+          }
+          var green = base - Math.floor(Math.random() * 75);
+          if (green < 0) {
+            green = green * (-1);
+          }
+          var blue = base - Math.floor(Math.random() * 75);
+          if (blue < 0) {
+            blue = blue * (-1);
+          }
+          console.log("rgb(" + red + ", " + green + ", " + blue + ")");
+          return "rgb(" + red + ", " + green + ", " + blue + ")";
+        }
+      
+        function generateRandomColors(genColor, hard) {
+          var arr = [];
+          if (hard) {
+            console.log("hey");
+            for (var i = 0; i < genColor; i++) {
+              var base = Math.floor(Math.random() * 256);
+              arr.push(hardRandomColor(base));
+            }
+          } else {
+            console.log("heyo");
+            for (var i = 0; i < genColor; i++) {
+              arr.push(randomColor());
+            }
+          }
+      
+          return arr;
+        }
+      
+        function randomColorG() {
+          var random = Math.floor(Math.random() * colors.length);
+          return colors[random];
+        }
+      
+        function changeColors(colors) {
+          for (var i = 0; i < squares.length; i++) {
+            squares[i].style.background = colors;
+          }
+        }
+      
+        var numSquares = 6;
+        var colors = generateRandomColors(numSquares, hard);
+        var squares = document.querySelectorAll(".square");
+        var pickedColor = randomColorG();
+        var colorDisplay = document.querySelector("#colorDisplay");
+        var messageDisplay = document.querySelector("#message");
+        var h1 = document.querySelector("h1");
+        var resetButton = document.querySelector("#reset");
+        var threeSquares = document.querySelector("#threesquares");
+        var sixSquares = document.querySelector("#sixsquares");
+        var easyButton = document.querySelector("#easy");
+        var hardButton = document.querySelector("#hard");
+        var body = document.querySelector("body");
+        var hard = false;
+        lastColor = "#555555";
+        var streak = document.querySelector("#streak");
+        var guessed = 0;
+        var clicked = 0;
+        var time = document.querySelector("#time");
+        var startTime = Date.now();
+        var avg = "Average guess time: 0";
+        time.textContent = avg;
+      
+        threeSquares.addEventListener("click", function () {
+          sixSquares.classList.remove("selected");
+          threeSquares.classList.add("selected");
+          numSquares = 3;
+          colors = generateRandomColors(numSquares, hard);
+          pickedColor = randomColorG();
+          colorDisplay.textContent = pickedColor;
+          for (var i = 0; i < squares.length; i++) {
+            if (colors[i]) {
+              squares[i].style.background = colors[i];
+            } else {
+              squares[i].style.display = "none";
+            }
+          }
+        });
+      
+        sixSquares.addEventListener("click", function () {
+          threeSquares.classList.remove("selected");
+          sixSquares.classList.add("selected");
+          numSquares = 6;
+          colors = generateRandomColors(numSquares, hard);
+          pickedColor = randomColorG();
+          colorDisplay.textContent = pickedColor;
+          for (var i = 0; i < squares.length; i++) {
+            squares[i].style.backgroundColor = colors[i];
+            squares[i].style.display = "block";
+          }
+        });
+      
+        easyButton.addEventListener("click", function () {
+          hard = false;
+          console.log(hard);
+      
+          colors = generateRandomColors(numSquares, hard);
+          pickedColor = randomColorG();
+          colorDisplay.textContent = pickedColor;
+          for (var i = 0; i < squares.length; i++) {
+            squares[i].style.backgroundColor = colors[i];
+          }
+        });
+      
+        hardButton.addEventListener("click", function () {
+          hard = true;
+          console.log(hard);
+      
+          colors = generateRandomColors(numSquares, hard);
+          pickedColor = randomColorG();
+          colorDisplay.textContent = pickedColor;
+          for (var i = 0; i < squares.length; i++) {
+            squares[i].style.backgroundColor = colors[i];
+          }
+        });
+      
+        resetButton.addEventListener("click", function () {
+          colors = generateRandomColors(numSquares, hard);
+          pickedColor = randomColorG();
+          colorDisplay.textContent = pickedColor;
+          messageDisplay.textContent = "";
+          for (var i = 0; i < squares.length; i++) {
+            squares[i].style.backgroundColor = colors[i];
+          }
+          clicked = 0;
+        });
+      
+        colorDisplay.textContent = pickedColor;
+      
+        streak.textContent = "Guessed: " + guessed;
+      
+        for (var i = 0; i < squares.length; i++) {
+          squares[i].style.backgroundColor = colors[i];
+          squares[i].addEventListener("click", function () {
+            var clickedColor = this.style.backgroundColor;
+            if (pickedColor === clickedColor) {
+              var guessTime = Date.now() - startTime;
+              totalGuessTime += guessTime;
+              totalGuesses++;
+      
+              var averageGuessTime = totalGuessTime / totalGuesses;
+              time.textContent = "Average guess time: " + averageGuessTime.toFixed(2);
+      
+              messageDisplay.textContent = "Correct!";
+              changeColors(clickedColor);
+              body.style.backgroundColor = clickedColor;
+              lastColor = clickedColor;
+              if (clicked === 0) {
+                guessed++;
+                streak.textContent = "Guessed: " + guessed;
+              }
+              clicked++;
+            } else {
+              this.style.backgroundColor = lastColor;
+            }
+          });
+        }
+      </script>
+
+
+</body>
+</html>
