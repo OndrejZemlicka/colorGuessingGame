@@ -74,6 +74,12 @@ var startTime = Date.now();
 var avg = "Average guess time: 0";
 time.textContent = avg;
 
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        document.getElementById("reset").click();
+    }
+});
+
 threeSquares.addEventListener("click", function () {
     sixSquares.classList.remove("selected");
     threeSquares.classList.add("selected");
